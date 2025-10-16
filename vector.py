@@ -34,6 +34,53 @@ class Vector:
 
     def __abs__(self):
         return math.sqrt(sum(x * x for x in self))
+        
+    def __neg__(self):
+        return Vector(-x for x in self)
+
+    def __pos__(self):
+        return Vector(self)
+
+    def __add__(self, other):
+        try:
+            pairs = itertools.zip_longest(self, other, fillvalue=0.0)
+            return Vector (a + b for a, b in pairs)
+        except TypeError:
+            return NotImplemented
+
+    def __radd__(self, other):
+        return self + other
+
+    def __mul__(self, scalar):
+        if isinstance(scalar, numbers.Real):
+            return Vector(n * scalar for n in self)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, scalar):
+        return self * scalar
+
+    def __matmul__(self, other):
+        try:
+            return sum(a * b for a, b in zip(self, other))
+        except TypeError:
+            return NotImplemented
+
+    def __rmatmul__(self, other):
+        return self @ other
+
+    def __eq__(self, other):
+        if isinstance(other, Vector):
+            return (len(self) == len(other) and all (a == b for a, b in zip(self, other)))
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        eq_result = self == other
+        if eq_result is NotImplemented:
+            return NotImplemented
+        else:
+            return not eq_result
 
     def __bool__(self):
         return bool(abs(self))
@@ -97,3 +144,5 @@ if __name__=='__main__':
     print(v1[0],v1[-1])
     v7 = Vector(range(7))
     print(v7[1:4])
+    print(v1 + v7)
+    print(v1 == v7)
